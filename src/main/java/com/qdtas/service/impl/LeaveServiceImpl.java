@@ -1,7 +1,9 @@
 package com.qdtas.service.impl;
 
 import com.qdtas.entity.Leave;
+import com.qdtas.exception.ResourceNotFoundException;
 import com.qdtas.repository.LeaveRepository;
+import com.qdtas.repository.UserRepository;
 import com.qdtas.service.LeaveService;
 import com.qdtas.utility.LeaveStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,19 @@ public class LeaveServiceImpl implements LeaveService {
     @Autowired
     private LeaveRepository leaveRequestRepository;
 
+    @Autowired
+    private UserRepository urp;
+
     public List<Leave> getAllLeaveRequests() {
         return leaveRequestRepository.findAll();
     }
 
     public Leave createLeaveRequest(Leave leaveRequest) {
+        Leave l =new Leave();
+        l.setStatus(leaveRequest.getStatus());
+        l.setReason(leaveRequest.getReason());
+        l.setStartDate(leaveRequest.getStartDate());
+        l.setEndDate(leaveRequest.getEndDate());
         return leaveRequestRepository.save(leaveRequest);
     }
 
