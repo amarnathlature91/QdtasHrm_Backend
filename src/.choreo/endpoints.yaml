@@ -1,0 +1,8 @@
+version: 0.1
+endpoints:
+- name: Qdtas Api
+  port: 8181
+  type: REST
+  networkVisibility: Public
+  context: /
+  schemaFilePath: openapi.yaml
