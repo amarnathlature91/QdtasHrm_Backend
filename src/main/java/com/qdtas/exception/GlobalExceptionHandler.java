@@ -21,8 +21,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
-	
-	@ExceptionHandler(ResourceNotFoundException.class)
+
+	@ExceptionHandler(EmailAlreadyRegisteredException.class)
+	public ResponseEntity<ErrorDetails> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException exception,WebRequest webrequest){
+		ErrorDetails errordetails=new ErrorDetails(new Date(),exception.getMessage(),webrequest.getDescription(false));
+		return new ResponseEntity<ErrorDetails>(errordetails,HttpStatus.BAD_REQUEST);
+	}
 	public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,WebRequest webrequest){
 		ErrorDetails errordetails=new ErrorDetails(new Date(),exception.getMessage(),webrequest.getDescription(false));
 		return new ResponseEntity<ErrorDetails>(errordetails,HttpStatus.NOT_FOUND);
@@ -32,7 +36,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<ErrorDetails> handleRuntimeException(RuntimeException exception,WebRequest webrequest){
          ErrorDetails errordetails=new ErrorDetails(new Date(),exception.getMessage(),webrequest.getDescription(false));
 		
-		return new ResponseEntity<ErrorDetails>(errordetails,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ErrorDetails>(errordetails,HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
