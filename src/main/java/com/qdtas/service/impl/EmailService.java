@@ -24,7 +24,7 @@ public class EmailService {
         emv.setEmail(toEmail);
         emr.save(emv);
 
-        String body="click on link to verify your account with PicBook: "+url;
+        String body="click on link to verify your account with QDTAS: "+url;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("lature7721@gmail.com");
         message.setTo(toEmail);

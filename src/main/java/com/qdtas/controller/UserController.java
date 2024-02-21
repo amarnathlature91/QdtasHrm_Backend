@@ -6,6 +6,7 @@ import com.qdtas.dto.LoginDTO;
 import com.qdtas.entity.User;
 import com.qdtas.security.JwtHelper;
 import com.qdtas.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +27,13 @@ public class UserController {
     JwtHelper jwt;
 
     @PostMapping("/add")
-    public ResponseEntity<?> register(@RequestBody AddUserDto rdt) {
+    public ResponseEntity<?> register(@Valid @RequestBody AddUserDto rdt) {
         User su = ussr.create(rdt);
         return new ResponseEntity<>(su, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO ldt) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO ldt) {
         try{
             JwtResponse luser = ussr.login(ldt);
             return new ResponseEntity<>(luser, HttpStatus.OK);

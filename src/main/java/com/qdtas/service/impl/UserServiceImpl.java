@@ -3,25 +3,23 @@ package com.qdtas.service.impl;
 import com.qdtas.dto.AddUserDto;
 import com.qdtas.dto.JwtResponse;
 import com.qdtas.dto.LoginDTO;
+import com.qdtas.entity.Department;
 import com.qdtas.entity.EmailVerification;
 import com.qdtas.entity.User;
 import com.qdtas.exception.EmailAlreadyRegisteredException;
 import com.qdtas.exception.UserNotFoundException;
+import com.qdtas.repository.DepartmentRepository;
 import com.qdtas.repository.EmailServiceRepository;
 import com.qdtas.repository.UserRepository;
 import com.qdtas.security.CustomUserDetails;
 import com.qdtas.security.JwtHelper;
 import com.qdtas.service.UserService;
 import com.qdtas.utility.FileUtils;
-import com.qdtas.utility.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 
 
 @Service
@@ -48,9 +47,10 @@ public class UserServiceImpl implements UserService {
     private JwtHelper jwtHelper;
     @Autowired
     PasswordEncoder pnc;
-
     @Autowired
     private AuthenticationManager manager;
+    @Autowired
+    private DepartmentRepository drp;
 
     public User getById(long uId) {
         return urp.findById(uId).orElseThrow(() -> new UserNotFoundException("User Not Found With Given ID"));
@@ -77,13 +77,25 @@ public class UserServiceImpl implements UserService {
             }
         } catch (UserNotFoundException e) {
             User u = new User();
+            Department department=new Department();
+            try{
+            System.out.println("11111111");
+            System.out.println(rdt.getDeptId());
+                department = drp.findById(rdt.getDeptId()).orElseThrow(() -> new UserNotFoundException("Department Not Found"));
+            }
+            catch(Exception exception){
+                department=new Department(0,"NA",new HashSet<>());
+            }
             u.setUsername(rdt.getUserName());
             u.setEmail(rdt.getEmail());
             u.setPassword(pnc.encode(rdt.getPassword()));
             u.setFirstName(rdt.getFirstName());
+            u.setMiddleName(rdt.getMiddleName());
             u.setLastName(rdt.getLastName());
+            u.setGender(rdt.getGender());
+            u.setDept(department);
             u.setJoinDate(new Date());
-            u.setRole(Role.ROLE_USER.name());
+            u.setRole(rdt.getRole());
             u.setEmailVerified(false);
             savedU = urp.save(u);
             ems.sendVerificationEmail(savedU.getEmail());

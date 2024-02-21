@@ -21,7 +21,12 @@ public class User{
     @JsonIgnore
     private String password;
     private String firstName;
+    private String middleName;
     private String lastName;
+    private String gender;
+    @ManyToOne
+    @JoinColumn(name = "dept_id")
+    private Department dept;
     @Column(length = 150)
     private String address;
     @Column(length = 256)
@@ -29,7 +34,7 @@ public class User{
     @Column(length = 32, nullable = false)
     private String role;
     private Boolean emailVerified;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date birthDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date joinDate;
