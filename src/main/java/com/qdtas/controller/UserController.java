@@ -80,7 +80,7 @@ public class UserController {
                     ),
             }
     )
-    @PostMapping("/verify/{token}")
+    @GetMapping("/verify/{token}")
     public ResponseEntity<?> verifyEmail(@PathVariable("token") String token) {
         ussr.verifyEmail(token);
         return new ResponseEntity<>(new JsonMessage("Verification Successfull"),HttpStatus.OK);
