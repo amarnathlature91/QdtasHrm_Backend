@@ -1,8 +1,11 @@
 package com.qdtas.controller;
 
+import com.qdtas.dto.LeaveDTO;
 import com.qdtas.entity.Leave;
 import com.qdtas.service.LeaveService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +22,11 @@ public class LeaveController {
     }
 
     @PostMapping("/create")
-    public Leave createLeaveRequest(@RequestBody Leave leaveRequest) {
+    public Leave createLeaveRequest(@Valid @RequestBody LeaveDTO leaveRequest) {
         return leaveRequestService.createLeaveRequest(leaveRequest);
     }
     @PutMapping("/{LeaveId}")
-    public Leave updateLeaveRequest(@PathVariable Long LeaveId, @RequestBody Leave updatedLeaveRequest) {
+    public Leave updateLeaveRequest(@PathVariable Long LeaveId, @RequestBody LeaveDTO updatedLeaveRequest) {
         return leaveRequestService.updateLeaveRequest(LeaveId, updatedLeaveRequest);
     }
 
@@ -32,12 +35,13 @@ public class LeaveController {
         leaveRequestService.deleteLeaveRequest(LeaveId);
     }
 
-    @PostMapping("/{LeaveId}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/approve/{LeaveId}")
     public Leave approveLeaveRequest(@PathVariable Long LeaveId) {
         return leaveRequestService.approveLeaveRequest(LeaveId);
     }
 
-    @PostMapping("/{LeaveId}/reject")
+    @PostMapping("/reject/{LeaveId}")
     public Leave rejectLeaveRequest(@PathVariable Long LeaveId) {
         return leaveRequestService.rejectLeaveRequest(LeaveId);
     }

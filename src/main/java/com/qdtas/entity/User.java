@@ -25,6 +25,7 @@ public class User{
     private String middleName;
     private String lastName;
     private String gender;
+    private int PhoneNumber;
     @ManyToOne
     @JoinColumn(name = "dept_id")
     private Department dept;

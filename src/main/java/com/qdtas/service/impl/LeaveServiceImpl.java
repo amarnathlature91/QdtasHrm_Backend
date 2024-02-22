@@ -1,12 +1,16 @@
 package com.qdtas.service.impl;
 
+import com.qdtas.dto.LeaveDTO;
 import com.qdtas.entity.Leave;
+import com.qdtas.entity.User;
 import com.qdtas.exception.ResourceNotFoundException;
 import com.qdtas.repository.LeaveRepository;
 import com.qdtas.repository.UserRepository;
 import com.qdtas.service.LeaveService;
+import com.qdtas.service.UserService;
 import com.qdtas.utility.LeaveStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,25 +21,27 @@ public class LeaveServiceImpl implements LeaveService {
     private LeaveRepository leaveRequestRepository;
 
     @Autowired
-    private UserRepository urp;
+    private UserService usr;
 
     public List<Leave> getAllLeaveRequests() {
         return leaveRequestRepository.findAll();
     }
 
-    public Leave createLeaveRequest(Leave leaveRequest) {
+    public Leave createLeaveRequest(LeaveDTO leaveRequest) {
         Leave l =new Leave();
-        l.setStatus(leaveRequest.getStatus());
+        l.setStatus(LeaveStatus.PENDING.name());
         l.setReason(leaveRequest.getReason());
         l.setStartDate(leaveRequest.getStartDate());
         l.setEndDate(leaveRequest.getEndDate());
-        return leaveRequestRepository.save(leaveRequest);
+        User u = usr.getById(leaveRequest.getEmployeeId());
+        l.setEmployee(u);
+        return leaveRequestRepository.save(l);
     }
 
-    public Leave updateLeaveRequest(Long id, Leave updatedLeaveRequest) {
+    public Leave updateLeaveRequest(Long id, LeaveDTO updatedLeaveRequest) {
         Leave existingLeaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found"));
-        existingLeaveRequest.setEmployee(updatedLeaveRequest.getEmployee());
+        existingLeaveRequest.setEmployee(usr.getById(updatedLeaveRequest.getEmployeeId()));
         existingLeaveRequest.setStartDate(updatedLeaveRequest.getStartDate());
         existingLeaveRequest.setEndDate(updatedLeaveRequest.getEndDate());
         return leaveRequestRepository.save(existingLeaveRequest);
@@ -45,6 +51,7 @@ public class LeaveServiceImpl implements LeaveService {
         leaveRequestRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Leave approveLeaveRequest(Long id) {
         Leave leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found"));
@@ -54,6 +61,7 @@ public class LeaveServiceImpl implements LeaveService {
         return leaveRequestRepository.save(leaveRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Leave rejectLeaveRequest(Long id) {
         Leave leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found"));

@@ -34,6 +34,7 @@ public class SecurityConfigs {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(AppConstants.PUBLIC_URLS)
                         .permitAll()
+                        .requestMatchers("/api/leave/approve/**","/api/leave/reject/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

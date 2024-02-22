@@ -23,24 +23,17 @@ public class Leave {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long leaveId;
 
-    @NotBlank(message = "User_Id cannot be blank")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User employee;
 
-    @NotNull(message = "Please provide a valid birthDate")
-    @Past(message = "Birthdate must be in the past")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDate;
 
-    @NotNull(message = "Please provide a valid birthDate")
-    @Past(message = "Birthdate must be in the past")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDate;
 
-    @NotBlank(message = "Reason cannot be blank")
     private String reason;
 
-    @NotBlank(message = "Status cannot be blank")
     private String status;
 }

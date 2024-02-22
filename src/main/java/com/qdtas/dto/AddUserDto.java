@@ -46,6 +46,9 @@ public class AddUserDto {
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
+    @NotBlank(message ="Phone Number should not be blank")
+    private int PhoneNumber;
+
     @NotNull(message = "Please provide a valid birthDate")
     @Past(message = "Birthdate must be in the past")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
