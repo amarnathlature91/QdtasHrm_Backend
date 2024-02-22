@@ -43,6 +43,7 @@ public class LeaveServiceImpl implements LeaveService {
                 .orElseThrow(() -> new RuntimeException("Leave request not found"));
         existingLeaveRequest.setEmployee(usr.getById(updatedLeaveRequest.getEmployeeId()));
         existingLeaveRequest.setStartDate(updatedLeaveRequest.getStartDate());
+        existingLeaveRequest.setReason(updatedLeaveRequest.getReason());
         existingLeaveRequest.setEndDate(updatedLeaveRequest.getEndDate());
         return leaveRequestRepository.save(existingLeaveRequest);
     }

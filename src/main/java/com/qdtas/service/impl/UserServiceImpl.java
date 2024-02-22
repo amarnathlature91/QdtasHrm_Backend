@@ -7,7 +7,7 @@ import com.qdtas.entity.Department;
 import com.qdtas.entity.EmailVerification;
 import com.qdtas.entity.User;
 import com.qdtas.exception.EmailAlreadyRegisteredException;
-import com.qdtas.exception.UserNotFoundException;
+import com.qdtas.exception.ResourceNotFoundException;
 import com.qdtas.repository.DepartmentRepository;
 import com.qdtas.repository.EmailServiceRepository;
 import com.qdtas.repository.UserRepository;
@@ -53,17 +53,23 @@ public class UserServiceImpl implements UserService {
     private DepartmentRepository drp;
 
     public User getById(long uId) {
-        return urp.findById(uId).orElseThrow(() -> new UserNotFoundException("User Not Found With Given ID"));
+        return urp.findById(uId).orElseThrow(() -> new ResourceNotFoundException("User","user_id",String.valueOf(uId)));
+    }
+
+    @Override
+    public void enableUser(long userId) {
+        User u = getById(userId);
+        u.setEmailVerified(true);
+        urp.save(u);
     }
 
     @Override
     public User getByEmail(String email) {
-        System.out.println(email);
         User u = urp.findByEmail(email);
         if (u != null) {
             return u;
         } else {
-            throw new UserNotFoundException("User Not Found with given Email");
+            throw new ResourceNotFoundException("User","email",email);
         }
     }
 
@@ -75,18 +81,16 @@ public class UserServiceImpl implements UserService {
             if (user != null) {
                 throw new EmailAlreadyRegisteredException("Email is Already Registered");
             }
-        } catch (UserNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             User u = new User();
             Department department=new Department();
             try{
-            System.out.println("11111111");
-            System.out.println(rdt.getDeptId());
-                department = drp.findById(rdt.getDeptId()).orElseThrow(() -> new UserNotFoundException("Department Not Found"));
+                department = drp.findById(rdt.getDeptId()).orElseThrow(() -> new ResourceNotFoundException("Department","department_id",String.valueOf(rdt.getDeptId())));
             }
             catch(Exception exception){
                 department=new Department(0,"NA",new HashSet<>());
             }
-            u.setUsername(rdt.getUserName());
+            u.setUserName(rdt.getUserName());
             u.setEmail(rdt.getEmail());
             u.setPassword(pnc.encode(rdt.getPassword()));
             u.setFirstName(rdt.getFirstName());
@@ -96,6 +100,9 @@ public class UserServiceImpl implements UserService {
             u.setDept(department);
             u.setJoinDate(new Date());
             u.setRole(rdt.getRole());
+            u.setPhoneNumber(rdt.getPhoneNumber());
+            u.setDesignation(rdt.getDesignation());
+            u.setBirthDate(rdt.getBirthDate());
             u.setEmailVerified(false);
             savedU = urp.save(u);
             ems.sendVerificationEmail(savedU.getEmail());
@@ -125,40 +132,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public User updateProfilePhoto(MultipartFile photo) {
-        User targetUser = getAuthenticatedUser();
-        if (!photo.isEmpty() && photo.getSize() > 0) {
-            String uploadDir = env.getProperty("upload.user.profiles");
-            String oldPhotoName = targetUser.getProfilePhoto();
-            String newPhotoName = FileUtils.nameFile(photo);
-            String newPhotoUrl = env.getProperty("upload.user.profiles") + File.separator + newPhotoName;
-            try {
-                if (oldPhotoName == null) {
-                    FileUtils.saveNewFile(uploadDir, newPhotoName, photo);
-                    targetUser.setProfilePhoto(newPhotoUrl);
-                } else {
-                    FileUtils.updateFile(uploadDir, oldPhotoName, newPhotoName, photo);
-                    targetUser.setProfilePhoto(newPhotoUrl);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return urp.save(targetUser);
-    }
-
     public User updateEmail(String email) {
         User u =  getAuthenticatedUser();
-
         if (!email.equalsIgnoreCase(u.getEmail())) {
             try {
                 User duplicateUser = getByEmail(email);
                 if (duplicateUser != null) {
                     throw new EmailAlreadyRegisteredException("Email Already Registered With Other User");
                 } else {
-                    throw new UserNotFoundException();
+                    throw new ResourceNotFoundException("User","Email",email);
                 }
-            } catch (UserNotFoundException e) {
+            } catch (ResourceNotFoundException e) {
                 u.setEmail(email);
                 u.setEmailVerified(false);
                 User updatedUser = urp.save(u);

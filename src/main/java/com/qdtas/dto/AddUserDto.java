@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -46,8 +47,9 @@ public class AddUserDto {
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
-    @NotBlank(message ="Phone Number should not be blank")
-    private int PhoneNumber;
+    private BigInteger phoneNumber;
+
+    private String designation;
 
     @NotNull(message = "Please provide a valid birthDate")
     @Past(message = "Birthdate must be in the past")

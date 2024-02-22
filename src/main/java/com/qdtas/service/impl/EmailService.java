@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import com.qdtas.utility.AppConstants;
 
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String toEmail) {
         String token = String.valueOf(UUID.randomUUID());
-        String url="http://localhost:8181/api/user/verify/"+token;
+        String url=AppConstants.BASE_URL+"/user/verify/"+token;
 
         EmailVerification emv=new EmailVerification();
         emv.setToken(token);

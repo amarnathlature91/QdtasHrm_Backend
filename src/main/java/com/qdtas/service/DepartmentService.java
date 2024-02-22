@@ -1,5 +1,6 @@
 package com.qdtas.service;
 
+import com.qdtas.dto.JsonMessage;
 import com.qdtas.entity.Department;
 import com.qdtas.entity.User;
 
@@ -15,7 +16,7 @@ public interface DepartmentService {
 
     public Department updateById(long deptId,Department dp);
 
-    public String deleteById(long deptId);
+    public JsonMessage deleteById(long deptId);
 
     public Set<Department> getAllDepartments();
     public List<User> getAllUsers(long DeptId);

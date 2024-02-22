@@ -23,5 +23,7 @@ public interface UserService {
 
     public User getById(long uId);
 
+    public void enableUser(long userId);
+
 
 }

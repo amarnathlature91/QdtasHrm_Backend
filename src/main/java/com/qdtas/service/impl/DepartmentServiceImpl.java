@@ -1,10 +1,12 @@
 package com.qdtas.service.impl;
 
+import com.qdtas.dto.JsonMessage;
 import com.qdtas.entity.Department;
 import com.qdtas.entity.User;
-import com.qdtas.exception.UserNotFoundException;
+import com.qdtas.exception.ResourceNotFoundException;
 import com.qdtas.repository.DepartmentRepository;
 import com.qdtas.service.DepartmentService;
+import io.swagger.v3.core.util.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department getById(long deptId) {
-        return drp.findById(deptId).orElseThrow(()-> new UserNotFoundException("Department Not Found"));
+        return drp.findById(deptId).orElseThrow(()-> new ResourceNotFoundException("Department","department_id",String.valueOf(deptId)));
     }
 
     @Override
@@ -38,13 +40,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public String deleteById(long deptId) {
+    public JsonMessage deleteById(long deptId) {
         try {
             drp.deleteById(deptId);
-            return "Department Deleted Successfully";
+            return new JsonMessage("Department Deleted Successfully");
         }
         catch(Exception exe){
-            return "Something Went Wrong";
+            return new JsonMessage("Something Went Wrong");
         }
     }
     @Override
