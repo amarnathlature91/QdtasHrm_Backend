@@ -21,7 +21,8 @@ public class AppConstants {
             "/leave/reject/**",
             "/dept/add",
             "/dept/update/**",
-            "/dept/delete/**"
+            "/dept/delete/**",
+            "/user/add"
     };
 
 }
