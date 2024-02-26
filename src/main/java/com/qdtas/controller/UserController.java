@@ -109,7 +109,7 @@ public class UserController {
             return new ResponseEntity<>(luser, HttpStatus.OK);
         }
         catch(Exception e){
-            return new ResponseEntity<>(new JsonMessage("Bad Credentials"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new JsonMessage("Bad Credentials"),HttpStatus.UNAUTHORIZED);
         }
     }
 
