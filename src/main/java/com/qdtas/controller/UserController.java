@@ -97,7 +97,7 @@ public class UserController {
                     ),
                     @ApiResponse(
                             description = "Bad Credentials",
-                            responseCode = "400",
+                            responseCode = "401",
                             content = @io.swagger.v3.oas.annotations.media.Content
                     ),
             }
@@ -129,7 +129,7 @@ public class UserController {
                     ),
                     @ApiResponse(
                             description = "User Not Found With Id",responseCode = "400",content = @io.swagger.v3.oas.annotations.media.Content
-                    ),
+                    )
             }
     )
     @PreAuthorize("hasRole('ADMIN')")

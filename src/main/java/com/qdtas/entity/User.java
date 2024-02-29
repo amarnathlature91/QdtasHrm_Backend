@@ -41,7 +41,7 @@ public class User{
     @Column(length = 32, nullable = false)
     private String role;
 
-    private BigInteger phoneNumber;
+    private String phoneNumber;
 
     @Column(length = 150)
     private String address;

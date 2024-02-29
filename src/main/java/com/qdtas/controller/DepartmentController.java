@@ -95,8 +95,24 @@ public class DepartmentController {
         return new ResponseEntity<>(dsr.deleteById(deptId), HttpStatus.OK);
     }
 
-    @Hidden
-    @GetMapping("/getAllDepartments")
+    @Operation(
+            description = "Get All Department",
+            summary = "Get All Department",
+            responses = {
+                    @ApiResponse(
+                            description = "Successfull",
+                            responseCode = "200",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+
+                    ),
+                    @ApiResponse(
+                            description = "Something went wrong",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+            }
+    )
+     @PostMapping("/getAllDepartments")
     public ResponseEntity<?> getAll() {
         return new ResponseEntity<>(dsr.getAllDepartments(), HttpStatus.OK);
     }
