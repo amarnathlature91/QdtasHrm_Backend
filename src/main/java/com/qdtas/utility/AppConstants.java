@@ -5,6 +5,8 @@ public class AppConstants {
 
     public static final String[] PUBLIC_URLS = {
             "/user/login",
+            "user/resetPassword",
+            "user/changeTempPassword",
             "/user/verify/**",
             "/swagger-ui/**",
             "/v3/api-docs/**"

@@ -17,6 +17,8 @@ import com.qdtas.service.UserService;
 import com.qdtas.utility.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +31,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -51,6 +56,9 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager manager;
     @Autowired
     private DepartmentRepository drp;
+
+    @Autowired
+    private PasswordEncoder penco;
 
     public User getById(long uId) {
         return urp.findById(uId).orElseThrow(() -> new ResourceNotFoundException("User","user_id",String.valueOf(uId)));
@@ -158,4 +166,48 @@ public class UserServiceImpl implements UserService {
         String authUserEmail = SecurityContextHolder.getContext().getAuthentication().getName().toString();
         return getByEmail(authUserEmail);
     }
+
+    @Override
+    public List<User> searchUser(String keyword,int pgn,int size ) {
+        System.out.println(keyword);
+        return urp.findByFirstNameOrLastNameLike(keyword, PageRequest.of(pgn,size))
+                .stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public void forgotPassword(String email) {
+        User user = getByEmail(email);
+        if (user != null){
+            String temporaryPassword = UUID.randomUUID().toString();
+            user.setPassword(temporaryPassword);
+            urp.save(user);
+            ems.sendPasswordResetEmail(user.getEmail(), temporaryPassword);
+        }
+        else {
+            throw new IllegalArgumentException("Error While Resetting Password");
+        }
+    }
+
+    @Override
+    public void changePassword(String email,String oldP,String newP){
+        User u=getByEmail(email);
+        if (u != null && penco.matches(oldP,u.getPassword())) {
+            u.setPassword(penco.encode(newP));
+            urp.save(u);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public void changeTempPassword(String email,String oldP,String newP){
+        User u=getByEmail(email);
+         if (u != null && oldP.equals(u.getPassword())) {
+            u.setPassword(penco.encode(newP));
+            urp.save(u);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
 }

@@ -1,9 +1,12 @@
 package com.qdtas.service.impl;
 import com.qdtas.entity.EmailVerification;
 import com.qdtas.repository.EmailServiceRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import com.qdtas.utility.AppConstants;
 
@@ -12,7 +15,7 @@ import java.util.UUID;
 @Service
 public class EmailService {
     @Autowired
-    JavaMailSender ms ;
+    private JavaMailSender ms ;
     @Autowired
     private EmailServiceRepository emr;
 
@@ -34,21 +37,28 @@ public class EmailService {
         ms.send(message);
     }
 
-    public void sendPasswordResetEmail(String email) {
-        String rtoken = String.valueOf(UUID.randomUUID());
-        String url="http://localhost:8181/api/user/reset-password/"+rtoken;
+    public void sendPasswordResetEmail(String email,String temp) {
+        String url="https://qdtas-hrm-frontend.vercel.app/";
 
-        EmailVerification emvr=new EmailVerification();
-        emvr.setToken(rtoken);
-        emvr.setEmail(email);
-        emr.save(emvr);
+        String body="<html><body>" +
+                "<h3>Use this Temporary Password to change password : </h3><br>"+
+                "<h6 style='color:red'>"+temp+"</h6><br>"+
+                "<h6><span style='color:red'>NOTE:</span>You can not login using Temporary password you can change your password here</h6>" +
+                "<a href='https://qdtas-hrm-frontend.vercel.app/'>Reset Password</a><br>"+
+        "</body></html>";
+        MimeMessage message = ms.createMimeMessage();
+        MimeMessageHelper helper;
+        try{
+            helper = new MimeMessageHelper(message, true);
+            helper.setFrom("services@qdtas.com");
+            helper.setTo(email);
+            helper.setSubject("About Password Reset");
+            helper.setText(body,true);
+            ms.send(message);
+        }catch (MessagingException e){
+            e.printStackTrace();
+        }
 
-        String body="click on link to Reset Your Password: "+url;
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("lature7721@gmail.com");
-        message.setTo(email);
-        message.setSubject("About Password Reset");
-        message.setText(body);
-        ms.send(message);
+
     }
 }

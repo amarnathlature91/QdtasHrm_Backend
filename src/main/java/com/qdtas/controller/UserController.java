@@ -1,9 +1,6 @@
 package com.qdtas.controller;
 
-import com.qdtas.dto.AddUserDto;
-import com.qdtas.dto.JsonMessage;
-import com.qdtas.dto.JwtResponse;
-import com.qdtas.dto.LoginDTO;
+import com.qdtas.dto.*;
 import com.qdtas.entity.User;
 import com.qdtas.security.JwtHelper;
 import com.qdtas.service.UserService;
@@ -46,14 +43,14 @@ public class UserController {
             summary = "1. Add User(by Admin)",
             responses = {
                     @ApiResponse(
-                    description = "Created",
-                    responseCode = "201",
-                    content = @io.swagger.v3.oas.annotations.media.Content
+                            description = "Created",
+                            responseCode = "201",
+                            content = @io.swagger.v3.oas.annotations.media.Content
                     ),
                     @ApiResponse(
-                    description = "Email Already Registered",
-                    responseCode = "400",
-                    content = @io.swagger.v3.oas.annotations.media.Content
+                            description = "Email Already Registered",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
                     )
             }
     )
@@ -83,7 +80,7 @@ public class UserController {
     @GetMapping("/verify/{token}")
     public ResponseEntity<?> verifyEmail(@PathVariable("token") String token) {
         ussr.verifyEmail(token);
-        return new ResponseEntity<>(new JsonMessage("Verification Successfull"),HttpStatus.OK);
+        return new ResponseEntity<>(new JsonMessage("Verification Successfull"), HttpStatus.OK);
     }
 
     @Operation(
@@ -104,12 +101,11 @@ public class UserController {
     )
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO ldt) {
-        try{
+        try {
             JwtResponse luser = ussr.login(ldt);
             return new ResponseEntity<>(luser, HttpStatus.OK);
-        }
-        catch(Exception e){
-            return new ResponseEntity<>(new JsonMessage("Bad Credentials"),HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new JsonMessage("Bad Credentials"), HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -125,10 +121,10 @@ public class UserController {
             summary = "enable a user",
             responses = {
                     @ApiResponse(
-                            description = "User Enabled Successfully",responseCode = "200",content = @io.swagger.v3.oas.annotations.media.Content
+                            description = "User Enabled Successfully", responseCode = "200", content = @io.swagger.v3.oas.annotations.media.Content
                     ),
                     @ApiResponse(
-                            description = "User Not Found With Id",responseCode = "400",content = @io.swagger.v3.oas.annotations.media.Content
+                            description = "User Not Found With Id", responseCode = "400", content = @io.swagger.v3.oas.annotations.media.Content
                     )
             }
     )
@@ -136,7 +132,87 @@ public class UserController {
     @PostMapping("/enableUser/{userId}")
     public ResponseEntity<?> enableUserById(@PathVariable("userId") Long userId) {
         ussr.enableUser(userId);
-        JsonMessage j=new JsonMessage("User Enabled Successfully");
+        JsonMessage j = new JsonMessage("User Enabled Successfully");
         return new ResponseEntity<>(j, HttpStatus.OK);
+    }
+
+    @Operation(
+            description = "Reset Password",
+            summary = "Reset a Password With Email",
+            responses = {
+                    @ApiResponse(
+                            description = "Temperory Password Sent To Registered Email ", responseCode = "200", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Email Not Registered", responseCode = "400", content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam(name = "email") String email) {
+        try {
+            ussr.forgotPassword(email);
+            return new ResponseEntity(new JsonMessage("a temporary password has been set to your account and you will receive it on registered mail"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(new JsonMessage("Email Not Registered"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Hidden
+    @PostMapping("/searchUser")
+    public ResponseEntity<?> searchUser(@RequestParam("key") String keyword,
+                                        @RequestParam("pgn") int pgn,
+                                        @RequestParam("sz") int size) {
+        return ResponseEntity.ok(ussr.searchUser(keyword, pgn, size));
+    }
+
+    @Operation(
+            description = "Change Temporary Password",
+            summary = "change a password with temporary password",
+            responses = {
+                    @ApiResponse(
+                            description = "Temporary Password Changed Successfully", responseCode = "200", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Error Changing Temporary Password", responseCode = "400", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Invalid email or Temporary Password", responseCode = "401", content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/changeTempPassword")
+    public ResponseEntity<?> changeTempPass(@RequestBody ChangePassDTO cp) {
+        try{
+            ussr.changeTempPassword(cp.getEmail(),cp.getOldP(),cp.getNewP());
+            return new ResponseEntity(new JsonMessage("Password Changed Successfully"), HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity(new JsonMessage("Invalid Old Password or email"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Operation(
+            description = "Change Password",
+            summary = "change a password with old password",
+            responses = {
+                    @ApiResponse(
+                            description = "Password Changed Successfully", responseCode = "200", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Error Changing Password", responseCode = "400", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Invalid email or Password", responseCode = "401", content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePass(@RequestBody ChangePassDTO cp) {
+        try{
+            ussr.changePassword(cp.getEmail(),cp.getOldP(),cp.getNewP());
+            return new ResponseEntity(new JsonMessage("Password Changed Successfully"), HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity(new JsonMessage("Invalid Old Password or email"), HttpStatus.UNAUTHORIZED);
+        }
     }
 }

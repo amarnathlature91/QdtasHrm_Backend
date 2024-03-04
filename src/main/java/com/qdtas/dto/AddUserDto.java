@@ -1,6 +1,7 @@
 package com.qdtas.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qdtas.utility.NoSpaces;
 import com.qdtas.utility.NonZero;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class AddUserDto {
     @Email(message = "Invalid email format")
     private String email;
 
+    @NoSpaces(message = "Password Should not contain spaces")
     @NotBlank(message = "Password cannot be blank")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,14}$", message = "Password should contain at least one digit, one special character and one lowercase and uppercase alphabate")
     private String password;
