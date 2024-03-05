@@ -3,6 +3,7 @@ package com.qdtas.service;
 import com.qdtas.dto.AddUserDto;
 import com.qdtas.dto.JwtResponse;
 import com.qdtas.dto.LoginDTO;
+import com.qdtas.dto.UpdateUserDTO;
 import com.qdtas.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,6 +34,12 @@ public interface UserService {
     public void changePassword(String email,String oldP,String newP);
 
     public void changeTempPassword(String email,String oldP,String newP);
+
+    public List<User> getAllUsers(int pgn,int size);
+
+    public void deleteUser(long userId);
+
+    public User updateUser(long uId, UpdateUserDTO ud);
 
 
 

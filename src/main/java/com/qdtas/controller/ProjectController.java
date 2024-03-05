@@ -46,8 +46,7 @@ public class ProjectController {
     @PostMapping("/add")
     public ResponseEntity<?> createProject(@Valid @RequestBody ProjectDTO pd){
         try {
-            psr.addProject(pd);
-            return new ResponseEntity(new JsonMessage("Project Added Succefully"),HttpStatus.CREATED);
+            return new ResponseEntity(psr.addProject(pd),HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity(new JsonMessage("Something Went Wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -152,7 +151,7 @@ public class ProjectController {
     @ApiOperation(value = "get all projects", position = 1)
     @Operation(
             description = "get all projects",
-            summary = "6.Get ALl Projects",
+            summary = "6.Get All Projects",
             responses = {
                     @ApiResponse(
                             description = "OK",

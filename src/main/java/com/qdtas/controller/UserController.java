@@ -2,6 +2,7 @@ package com.qdtas.controller;
 
 import com.qdtas.dto.*;
 import com.qdtas.entity.User;
+import com.qdtas.exception.ResourceNotFoundException;
 import com.qdtas.security.JwtHelper;
 import com.qdtas.service.UserService;
 import io.swagger.annotations.Api;
@@ -21,6 +22,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -114,6 +117,16 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable("userId") Long userId) {
         User targetUser = ussr.getById(userId);
         return new ResponseEntity<>(targetUser, HttpStatus.OK);
+    }
+
+    @Hidden
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllUsers(@RequestParam(value = "pgn",defaultValue = "1") int pgn,
+                                         @RequestParam(value = "sz" ,defaultValue = "10") int size) {
+        pgn = pgn < 0 ? 0 : pgn-1;
+        size = size <= 0 ? 10 : size;
+        List<User> ul = ussr.getAllUsers(pgn, size);
+        return new ResponseEntity<>(ul, HttpStatus.OK);
     }
 
     @Operation(
@@ -215,4 +228,40 @@ public class UserController {
             return new ResponseEntity(new JsonMessage("Invalid Old Password or email"), HttpStatus.UNAUTHORIZED);
         }
     }
+
+    @Operation(
+            description = "Delete a User",
+            summary = "Delete a User",
+            responses = {
+                    @ApiResponse(
+                            description = "User Deleted Successfully", responseCode = "200", content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Error Deleting a User", responseCode = "400", content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/deleteUser")
+    public ResponseEntity<?> deleteUser(@RequestParam(name = "uId",required = true) long uId){
+        try{
+            ussr.deleteUser(uId);
+            return new ResponseEntity<>(new JsonMessage("User Deleted Successfully"), HttpStatus.OK);
+        }
+        catch (ResourceNotFoundException e){
+            return new ResponseEntity<>(new JsonMessage("Error Deleting a User"), HttpStatus.OK);
+        }
+
+    }
+
+    @PostMapping("/updateUser/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable("userId") long uId, @RequestBody UpdateUserDTO ud){
+        try{
+            return new ResponseEntity<>(ussr.updateUser(uId,ud), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new JsonMessage("Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }

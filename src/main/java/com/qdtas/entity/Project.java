@@ -30,7 +30,7 @@ public class Project {
     private String client;
 
     @JsonManagedReference
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "project_team_members",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "team_member_id"))

@@ -1,12 +1,13 @@
-package com.qdtas.entity;
+package com.qdtas.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
+import com.qdtas.entity.Department;
+import com.qdtas.entity.Project;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,18 +16,12 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "users")
-public class User{
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int userId;
+public class UpdateUserDTO {
 
     private String userName;
 
     private String email;
 
-    @JsonIgnore
     private String password;
 
     private String firstName;
@@ -37,26 +32,17 @@ public class User{
 
     private String gender;
 
-    @ManyToOne
-    @JoinColumn(name = "dept_id")
-    private Department dept;
+    private long deptId;
 
-    @Column(length = 32, nullable = false)
     private String role;
 
     private String phoneNumber;
 
-    @Column(length = 150)
     private String address;
 
-    @Column(length = 100)
     private String designation;
 
     private Boolean emailVerified;
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "team",cascade = CascadeType.ALL)
-    private Set<Project> projects = new HashSet<>();
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date birthDate;

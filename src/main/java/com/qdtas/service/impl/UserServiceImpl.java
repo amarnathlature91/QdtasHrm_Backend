@@ -3,6 +3,7 @@ package com.qdtas.service.impl;
 import com.qdtas.dto.AddUserDto;
 import com.qdtas.dto.JwtResponse;
 import com.qdtas.dto.LoginDTO;
+import com.qdtas.dto.UpdateUserDTO;
 import com.qdtas.entity.Department;
 import com.qdtas.entity.EmailVerification;
 import com.qdtas.entity.User;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,10 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -179,7 +178,9 @@ public class UserServiceImpl implements UserService {
         User user = getByEmail(email);
         if (user != null){
             String temporaryPassword = UUID.randomUUID().toString();
+            System.out.println(temporaryPassword);
             user.setPassword(temporaryPassword);
+
             urp.save(user);
             ems.sendPasswordResetEmail(user.getEmail(), temporaryPassword);
         }
@@ -208,6 +209,60 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public List<User> getAllUsers(int pgn, int size) {
+        return urp.findAll(   PageRequest.of(pgn, size, Sort.by(Sort.Direction.ASC, "firstName","lastName") )  )
+                .stream().toList();
+    }
+
+    @Override
+    public void deleteUser(long userId) {
+        urp.delete(getById(userId));
+    }
+
+    @Override
+    public User updateUser(long uId, UpdateUserDTO ud) {
+        User u = getById(uId);
+
+        if (ud.getUserName() != null) {
+            u.setUserName(ud.getUserName());
+        } else if (ud.getFirstName()!= null) {
+            u.setFirstName(ud.getFirstName());
+        } else if (ud.getMiddleName() != null) {
+            u.setMiddleName(ud.getMiddleName());
+        } else if (ud.getLastName() != null) {
+            u.setLastName(ud.getLastName());
+        } else if (ud.getAddress() != null) {
+            u.setAddress(ud.getAddress());
+        } else if (ud.getPhoneNumber() != null) {
+            u.setPhoneNumber(ud.getPhoneNumber());
+        } else if (ud.getEmail() != null) {
+            if (u.getEmail().equals(ud.getEmail())){
+
+            }else {
+                u.setEmail(ud.getEmail());
+                ems.sendVerificationEmail(ud.getEmail());
+                u.setEmailVerified(false);
+            }
+        } else if (ud.getGender() != null) {
+            u.setGender(ud.getGender());
+        } else if (ud.getDesignation() != null) {
+            u.setDesignation(ud.getDesignation());
+        } else if (ud.getRole() != null) {
+            u.setRole(ud.getRole());
+        } else if (ud.getBirthDate() != null) {
+            u.setBirthDate(ud.getBirthDate());
+        } else if (ud.getPassword() != null) {
+            u.setPassword(pnc.encode(ud.getPassword()));
+        } else if (Objects.isNull(ud.getDeptId())) {
+            Department byId = drp.findById(ud.getDeptId()).orElseThrow(()->new ResourceNotFoundException("Department","DepatmentId",String.valueOf(ud.getDeptId())));
+            u.setDept(byId);
+        }
+
+        return urp.save(u);
+
     }
 
 }

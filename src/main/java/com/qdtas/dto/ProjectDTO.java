@@ -32,6 +32,7 @@ public class ProjectDTO {
 
     @NotBlank(message = "Client Cannot be Blank")
     @NotNull(message = "Client Cannot be Blank")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Only alphabets are allowed")
     private String client;
 
 }
