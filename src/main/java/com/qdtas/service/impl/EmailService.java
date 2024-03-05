@@ -38,13 +38,13 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(String email,String temp) {
-        String url="https://qdtas-hrm-frontend.vercel.app/";
+        String url="https://qdtas-hrm-frontend.vercel.app/changeTempPassword";
 
         String body="<html><body>" +
                 "<h3>Use this Temporary Password to change password : </h3><br>"+
                 "<h6 style='color:red'>"+temp+"</h6><br>"+
                 "<h6><span style='color:red'>NOTE:</span>You can not login using Temporary password you can change your password here</h6>" +
-                "<a href='https://qdtas-hrm-frontend.vercel.app/'>Reset Password</a><br>"+
+                "<a href='"+url+"'>Reset Password</a><br>"+
         "</body></html>";
         MimeMessage message = ms.createMimeMessage();
         MimeMessageHelper helper;
