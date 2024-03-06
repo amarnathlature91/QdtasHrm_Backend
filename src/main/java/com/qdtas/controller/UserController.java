@@ -261,7 +261,4 @@ public class UserController {
             return new ResponseEntity<>(new JsonMessage("Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
 }

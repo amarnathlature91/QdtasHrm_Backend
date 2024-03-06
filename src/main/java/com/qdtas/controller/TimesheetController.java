@@ -1,0 +1,127 @@
+package com.qdtas.controller;
+
+import com.qdtas.dto.JsonMessage;
+import com.qdtas.entity.Timesheet;
+import com.qdtas.service.TimesheetService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/ts")
+@Tag(name = "5. Timesheet")
+public class TimesheetController {
+
+    @Autowired
+    private TimesheetService tsr;
+
+
+    @ApiOperation(value = "Add Timesheet", position = 1)
+    @Operation(
+            description = "Add Timesheet",
+            summary = "1. Add Timesheet",
+            responses = {
+                    @ApiResponse(
+                            description = "Created",
+                            responseCode = "201",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Something Went Wrong",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/add")
+    public ResponseEntity<?> add(@Valid @RequestBody Timesheet ts ,
+                                 @RequestParam(name = "uId",required = true) long uId){
+        return new ResponseEntity<>(tsr.addTimesheet(ts), HttpStatus.CREATED);
+    }
+
+   @Hidden
+    @PostMapping("/getById/{tId}")
+    public ResponseEntity<?> getById(@PathVariable long tId){
+        return new ResponseEntity<>(tsr.getTimesheetById(tId),HttpStatus.OK);
+    }
+
+
+    @ApiOperation(value = "Get All Timesheets By Employee Id", position = 1)
+    @Operation(
+            description = "Get All Timesheets By Employee Id",
+            summary = "3.Get All Timesheets By Employee Id",
+            responses = {
+                    @ApiResponse(
+                            description = "Ok",
+                            responseCode = "200",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Something Went Wrong",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/getByEmpId/{eId}")
+    public ResponseEntity<?> getByEmp(@PathVariable long eId){
+        return new ResponseEntity<>(tsr.getTimesheetByEmployeeId(eId),HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Delete Timesheet By  Id", position = 1)
+    @Operation(
+            description = "Delete Timesheet By  Id",
+            summary = "4.Delete Timesheet By  Id",
+            responses = {
+                    @ApiResponse(
+                            description = "Ok",
+                            responseCode = "200",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Timesheet Not Found",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/deleteById/{tId}")
+    public ResponseEntity<?> deleteById(@PathVariable long tId){
+        try {
+            tsr.deleteById(tId);
+            return new ResponseEntity<>(new JsonMessage("Timesheet Deleted Successfully"),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new JsonMessage("Timesheet Not Found"),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "Update Timesheets By  Id", position = 1)
+    @Operation(
+            description = "Update Timesheets By  Id",
+            summary = "2.Update Timesheets By  Id",
+            responses = {
+                    @ApiResponse(
+                            description = "Ok",
+                            responseCode = "200",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Something Went Wrong",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
+                    )
+            }
+    )
+    @PostMapping("/updateById/{tId}")
+    public ResponseEntity<?> updateById( @PathVariable long tId ,@Valid @RequestBody Timesheet ts){
+        return new ResponseEntity<>(tsr.updateTimesheet(tId,ts), HttpStatus.OK);
+    }
+
+}
