@@ -256,7 +256,7 @@ public class UserServiceImpl implements UserService {
             u.setBirthDate(ud.getBirthDate());
         } else if (ud.getPassword() != null) {
             u.setPassword(pnc.encode(ud.getPassword()));
-        } else if (Objects.isNull(ud.getDeptId())) {
+        } else if (ud.getDeptId() != 0) {
             Department byId = drp.findById(ud.getDeptId()).orElseThrow(()->new ResourceNotFoundException("Department","DepatmentId",String.valueOf(ud.getDeptId())));
             u.setDept(byId);
         }
