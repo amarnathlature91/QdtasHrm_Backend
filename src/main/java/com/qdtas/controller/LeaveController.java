@@ -48,9 +48,9 @@ public class LeaveController {
                     ),
             }
     )
-    @PostMapping("/create")
-    public ResponseEntity<?> createLeaveRequest(@Valid @RequestBody LeaveDTO leaveRequest) {
-        return new ResponseEntity(leaveRequestService.createLeaveRequest(leaveRequest), HttpStatus.CREATED);
+    @PostMapping("/create/{empId}")
+    public ResponseEntity<?> createLeaveRequest(@Valid @RequestBody LeaveDTO leaveRequest,@PathVariable long empId) {
+        return new ResponseEntity(leaveRequestService.createLeaveRequest(empId,leaveRequest), HttpStatus.CREATED);
     }
 
     @Operation(

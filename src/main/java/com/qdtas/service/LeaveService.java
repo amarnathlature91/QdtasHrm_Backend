@@ -9,7 +9,7 @@ public interface LeaveService {
 
     public List<Leave> getAllLeaveRequests();
 
-    public Leave createLeaveRequest(LeaveDTO leaveRequest);
+    public Leave createLeaveRequest(long empId,LeaveDTO leaveRequest);
 
     public Leave updateLeaveRequest(Long id, LeaveDTO updatedLeaveRequest);
 

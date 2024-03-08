@@ -27,13 +27,13 @@ public class LeaveServiceImpl implements LeaveService {
         return leaveRequestRepository.findAll();
     }
 
-    public Leave createLeaveRequest(LeaveDTO leaveRequest) {
+    public Leave createLeaveRequest(long empId,LeaveDTO leaveRequest) {
         Leave l =new Leave();
         l.setStatus(LeaveStatus.PENDING.name());
         l.setReason(leaveRequest.getReason());
         l.setStartDate(leaveRequest.getStartDate());
         l.setEndDate(leaveRequest.getEndDate());
-        User u = usr.getById(leaveRequest.getEmployeeId());
+        User u = usr.getById(empId);
         l.setEmployee(u);
         return leaveRequestRepository.save(l);
     }

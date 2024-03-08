@@ -42,8 +42,8 @@ public class TimesheetController {
     )
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody Timesheet ts ,
-                                 @RequestParam(name = "uId",required = true) long uId){
-        return new ResponseEntity<>(tsr.addTimesheet(ts), HttpStatus.CREATED);
+                                 @RequestParam(name = "empId",required = true) long uId){
+        return new ResponseEntity<>(tsr.addTimesheet(uId,ts), HttpStatus.CREATED);
     }
 
    @Hidden
@@ -53,7 +53,7 @@ public class TimesheetController {
     }
 
 
-    @ApiOperation(value = "Get All Timesheets By Employee Id", position = 1)
+    @ApiOperation(value = "Get All Timesheets By Employee Id", position = 2)
     @Operation(
             description = "Get All Timesheets By Employee Id",
             summary = "3.Get All Timesheets By Employee Id",

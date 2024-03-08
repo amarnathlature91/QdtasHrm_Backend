@@ -29,9 +29,10 @@ public class TimesheetServiceImpl implements TimesheetService {
     private ProjectService psr;
 
     @Override
-    public Timesheet addTimesheet(Timesheet ts) {
-        urp.getById(ts.getEmpId());
+    public Timesheet addTimesheet(long empId,Timesheet ts) {
+        User u = urp.getById(empId);
         psr.getProjectById(ts.getProjectId());
+        ts.setEmpId(u.getUserId());
         return trp.save(ts);
     }
 

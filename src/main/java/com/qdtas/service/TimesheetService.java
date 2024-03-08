@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TimesheetService {
 
-    public Timesheet addTimesheet(Timesheet ts);
+    public Timesheet addTimesheet(long empId,Timesheet ts);
 
     public Timesheet getTimesheetById(long tsId);
 

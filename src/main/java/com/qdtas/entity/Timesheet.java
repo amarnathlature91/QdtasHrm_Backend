@@ -2,6 +2,7 @@ package com.qdtas.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qdtas.utility.NonZero;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -43,8 +44,7 @@ public class Timesheet {
     @NotNull(message = "Note Should Not Be Null")
     private String note;
 
-    @NotNull(message = "Employee ID Should Not Be Null")
-    @NonZero( message = "Employee ID should contain only numbers")
+    @ApiModelProperty(hidden = true)
     private long empId;
 
     @NotNull(message = "Project ID Should Not Be Null")
