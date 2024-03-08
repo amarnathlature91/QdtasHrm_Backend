@@ -3,6 +3,7 @@ package com.qdtas.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qdtas.utility.NonZero;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -44,7 +45,7 @@ public class Timesheet {
     @NotNull(message = "Note Should Not Be Null")
     private String note;
 
-    @ApiModelProperty(hidden = true)
+    @Hidden
     private long empId;
 
     @NotNull(message = "Project ID Should Not Be Null")
