@@ -26,6 +26,7 @@ public class Timesheet {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Hidden
     private long timeSheetId;
 
     @NotNull(message = "Start Time Should Not Be Null")

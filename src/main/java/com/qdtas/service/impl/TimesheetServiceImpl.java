@@ -29,8 +29,8 @@ public class TimesheetServiceImpl implements TimesheetService {
     private ProjectService psr;
 
     @Override
-    public Timesheet addTimesheet(long empId,Timesheet ts) {
-        User u = urp.getById(empId);
+    public Timesheet addTimesheet(Timesheet ts) {
+        User u = urp.getAuthenticatedUser();
         psr.getProjectById(ts.getProjectId());
         ts.setEmpId(u.getUserId());
         return trp.save(ts);
@@ -55,20 +55,19 @@ public class TimesheetServiceImpl implements TimesheetService {
     @Override
     public Timesheet updateTimesheet(long tsId, Timesheet ts) {
         Timesheet t = getTimesheetById(tsId);
+        User u = urp.getAuthenticatedUser();
 
-        urp.getById(ts.getEmpId());
-        psr.getProjectById(ts.getProjectId());
-
-        t.setEmpId(ts.getEmpId());
-
-        t.setStartTime(ts.getStartTime());
-
-        t.setEndTime(ts.getEndTime());
-
-        t.setDate(ts.getDate());
-
-        t.setProjectId(ts.getProjectId());
-        t.setNote(ts.getNote());
-        return trp.save(ts);
+        if (u.getEmail().equals(urp.getById(t.getEmpId()).getEmail())) {
+            psr.getProjectById(ts.getProjectId());
+            t.setStartTime(ts.getStartTime());
+            t.setEndTime(ts.getEndTime());
+            t.setDate(ts.getDate());
+            t.setProjectId(ts.getProjectId());
+            t.setNote(ts.getNote());
+        }
+        else {
+            throw new RuntimeException("Only A Creator of Timesheet can Update Timesheet");
+        }
+        return trp.save(t);
     }
 }

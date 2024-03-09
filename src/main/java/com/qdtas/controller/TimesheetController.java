@@ -41,9 +41,8 @@ public class TimesheetController {
             }
     )
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @RequestBody Timesheet ts ,
-                                 @RequestParam(name = "empId",required = true) long uId){
-        return new ResponseEntity<>(tsr.addTimesheet(uId,ts), HttpStatus.CREATED);
+    public ResponseEntity<?> add(@Valid @RequestBody Timesheet ts){
+        return new ResponseEntity<>(tsr.addTimesheet(ts), HttpStatus.CREATED);
     }
 
    @Hidden
@@ -51,7 +50,6 @@ public class TimesheetController {
     public ResponseEntity<?> getById(@PathVariable long tId){
         return new ResponseEntity<>(tsr.getTimesheetById(tId),HttpStatus.OK);
     }
-
 
     @ApiOperation(value = "Get All Timesheets By Employee Id", position = 2)
     @Operation(
@@ -116,12 +114,17 @@ public class TimesheetController {
                             description = "Something Went Wrong",
                             responseCode = "400",
                             content = @io.swagger.v3.oas.annotations.media.Content
+                    ),
+                    @ApiResponse(
+                            description = "Only a creator of Timesheet can update timesheet",
+                            responseCode = "400",
+                            content = @io.swagger.v3.oas.annotations.media.Content
                     )
             }
     )
-    @PostMapping("/updateById/{tId}")
-    public ResponseEntity<?> updateById( @PathVariable long tId ,@Valid @RequestBody Timesheet ts){
-        return new ResponseEntity<>(tsr.updateTimesheet(tId,ts), HttpStatus.OK);
+    @PostMapping("/updateById/{tsId}")
+    public ResponseEntity<?> updateById( @PathVariable long tsId ,@Valid @RequestBody Timesheet ts){
+        return new ResponseEntity<>(tsr.updateTimesheet(tsId,ts), HttpStatus.OK);
     }
 
 }

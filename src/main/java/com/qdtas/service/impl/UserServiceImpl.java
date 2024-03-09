@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private DepartmentRepository drp;
 
+
     @Autowired
     private PasswordEncoder penco;
 
@@ -163,6 +164,7 @@ public class UserServiceImpl implements UserService {
 
     public final User getAuthenticatedUser() {
         String authUserEmail = SecurityContextHolder.getContext().getAuthentication().getName().toString();
+        System.out.println(authUserEmail);
         return getByEmail(authUserEmail);
     }
 
