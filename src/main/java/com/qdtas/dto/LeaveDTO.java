@@ -3,6 +3,7 @@ package com.qdtas.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qdtas.entity.User;
 import com.qdtas.utility.NonZero;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,8 +23,7 @@ import java.util.Date;
 public class LeaveDTO {
 
     private long leaveId;
-
-    @NonZero
+    @Hidden
     private long employeeId;
 
     @NotNull(message = "Please provide a valid birthDate")
@@ -34,8 +34,12 @@ public class LeaveDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDate;
 
+    @NotNull(message = "please provide leave type.")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Only alphabets are allowed")
+    private String type;
+
     @NotBlank(message = "Reason cannot be blank")
     private String reason;
+    @Hidden
     private String status;
 }

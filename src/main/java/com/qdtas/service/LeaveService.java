@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface LeaveService {
 
-    public List<Leave> getAllLeaveRequests();
+    public List<Leave> getAllLeaveRequests(int pgn,int size);
 
     public Leave createLeaveRequest(long empId,LeaveDTO leaveRequest);
 

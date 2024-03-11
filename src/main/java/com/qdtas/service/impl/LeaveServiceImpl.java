@@ -10,9 +10,10 @@ import com.qdtas.service.LeaveService;
 import com.qdtas.service.UserService;
 import com.qdtas.utility.LeaveStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -23,14 +24,16 @@ public class LeaveServiceImpl implements LeaveService {
     @Autowired
     private UserService usr;
 
-    public List<Leave> getAllLeaveRequests() {
-        return leaveRequestRepository.findAll();
+    public List<Leave> getAllLeaveRequests(int pgn, int size) {
+        return leaveRequestRepository.findAll(   PageRequest.of(pgn, size, Sort.by(Sort.Direction.ASC, "startDate") )  )
+                .stream().toList();
     }
 
     public Leave createLeaveRequest(long empId,LeaveDTO leaveRequest) {
         Leave l =new Leave();
         l.setStatus(LeaveStatus.PENDING.name());
         l.setReason(leaveRequest.getReason());
+        l.setType(leaveRequest.getType());
         l.setStartDate(leaveRequest.getStartDate());
         l.setEndDate(leaveRequest.getEndDate());
         User u = usr.getById(empId);
@@ -45,14 +48,20 @@ public class LeaveServiceImpl implements LeaveService {
         existingLeaveRequest.setStartDate(updatedLeaveRequest.getStartDate());
         existingLeaveRequest.setReason(updatedLeaveRequest.getReason());
         existingLeaveRequest.setEndDate(updatedLeaveRequest.getEndDate());
+        existingLeaveRequest.setType(updatedLeaveRequest.getType());
         return leaveRequestRepository.save(existingLeaveRequest);
     }
 
-    public void deleteLeaveRequest(Long id) {
-        leaveRequestRepository.deleteById(id);
+    public Leave getLeaveById(long lId){
+        return leaveRequestRepository.findById(lId).orElseThrow(()-> new ResourceNotFoundException("LeaveRequest","LeaveID",String.valueOf(lId)));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void deleteLeaveRequest(Long id) {
+        Leave l = getLeaveById(id);
+        leaveRequestRepository.delete(l);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     public Leave approveLeaveRequest(Long id) {
         Leave leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found"));

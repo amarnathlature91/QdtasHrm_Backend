@@ -3,6 +3,7 @@ package com.qdtas.controller;
 import com.qdtas.dto.JsonMessage;
 import com.qdtas.dto.LeaveDTO;
 import com.qdtas.entity.Leave;
+import com.qdtas.entity.User;
 import com.qdtas.service.LeaveService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/leave")
+@CrossOrigin
 @Tag(name = "3. Leave")
 public class LeaveController {
     @Autowired
@@ -27,8 +29,13 @@ public class LeaveController {
 
     @Hidden
     @GetMapping("/getAllLeaves")
-    public ResponseEntity<?> getAllLeaveRequests() {
-        return new ResponseEntity(leaveRequestService.getAllLeaveRequests(), HttpStatus.OK);
+    public ResponseEntity<?> getAllLeaveRequests(@RequestParam(value = "pgn",defaultValue = "1") int pgn,
+                                         @RequestParam(value = "sz" ,defaultValue = "10") int size){
+        pgn = pgn < 0 ? 0 : pgn-1;
+        size = size <= 0 ? 10 : size;
+        List<Leave> l = leaveRequestService.getAllLeaveRequests(pgn, size);
+        return new ResponseEntity<>(l, HttpStatus.OK);
+
     }
 
     @Operation(
@@ -95,14 +102,8 @@ public class LeaveController {
     )
     @PostMapping("/delete/{leaveId}")
     public ResponseEntity<?> deleteLeaveRequest(@PathVariable Long leaveId) {
-        try{
             leaveRequestService.deleteLeaveRequest(leaveId);
             return new ResponseEntity(new JsonMessage("Successfully Deleted"), HttpStatus.OK);
-        }
-        catch (Exception e){
-            return new ResponseEntity(new JsonMessage("Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     }
 
     @Operation(
